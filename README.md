@@ -16,6 +16,5 @@ up per project, and creates expenses for any of those that exceed your `MIN_HOUR
 ## Todo
 
 The following features would be desirable:
-1. Error logging/reporting 
-1. Checking that an identical expense doesn't already exist (to allow the script to 
-   be re-run if necessary)
+- [ ] Error logging/reporting 
+- [ ] Check that an identical expense doesn't already exist (to allow the script to be re-run if necessary)
