@@ -8,6 +8,7 @@ It looks at yesterday's time entries, finds those that are non-billable, sums th
 up per project, and creates expenses for any of those that exceed your `MIN_HOURS` setting.
 
 ## Setup
+1. Make sure you have added an Expense Category in Harvest called "Day Rate"
 1. Copy `.env.example` to `.env`
 1. Create a Personal Access Token over at https://id.getharvest.com/developers and add the details to your `.env` file
 1. `yarn install`   
@@ -17,4 +18,5 @@ up per project, and creates expenses for any of those that exceed your `MIN_HOUR
 
 The following features would be desirable:
 - [ ] Error logging/reporting 
-- [ ] Check that an identical expense doesn't already exist (to allow the script to be re-run if necessary)
+- [x] Check that an identical expense doesn't already exist (to allow the script to be re-run if necessary)
+- [ ] Ability to pass a start date via a CLI option
