@@ -16,14 +16,13 @@ const request = async (path, method = 'GET', data = {}) => {
   return body
 }
 
-const run = async () => {
-  // Find all time entries for the last couple of weeks
-  const date_start = new Date()
-  const date_end = new Date()
-  date_start.setDate(date_start.getDate() - 14)
-  date_end.setDate(date_end.getDate() - 1)
-  let [from] = date_start.toISOString().split('T')
-  let [to] = date_end.toISOString().split('T')
+const get_expense_category_id = async () => {
+  // Get id for whatever expense_category is_active with name "Day Rate"
+  const { expense_categories } = await request('expense_categories?is_active=true')
+  return expense_categories.find(c => c.name === 'Day Rate').id
+}
+
+const get_days_worked = async (from, to) => {
   const { time_entries } = await request(`time_entries?from=${from}&to=${to}&is_running=false`)
 
   // We're only interested in "non-billable" entries
@@ -39,31 +38,58 @@ const run = async () => {
   }, {})
 
   // Exclude any projects where the total number of hours is less than what we consider to be a day's work
-  const qualifying = Object.fromEntries(Object.entries(totals).filter(([_, hours]) => hours > process.env.MIN_HOURS))
+  return Object.entries(totals).filter(([_, hours]) => hours > process.env.MIN_HOURS).map(([key]) => key)
+}
 
-  // Get id for whatever expense_category is_active with name "Day Rate"
-  const { expense_categories } = await request('expense_categories?is_active=true')
-  const { id: expense_category_id } = expense_categories.find(c => c.name === 'Day Rate')
-
+const get_existing_expenses = async (from, to) => {
   // Find any existing expenses for this date range
-  const { expenses: existing_expenses } = await request(`expenses?from=${from}&to=${to}`)
-  const relevant_expenses = existing_expenses.filter(e => e.expense_category.id === expense_category_id)
-  const existing_expense_keys = relevant_expenses.reduce((acc, { spent_date, project: { id: project_id } }) => (
-    [...acc, JSON.stringify({ project_id, spent_date })]
-  ), [])
-  // Filter away any expenses that already exist in Harvest
-  const expenses = Object.fromEntries(Object.entries(qualifying).filter(([key]) => !existing_expense_keys.includes(key)))
+  const { expenses } = await request(`expenses?from=${from}&to=${to}`)
+  return expenses
+}
 
-  // Create a new expense for each remaining entry
-  for (let key in expenses) {
+const run = async () => {
+  // Look back over the last couple of weeks
+  const date_start = new Date()
+  const date_end = new Date()
+  date_start.setDate(date_start.getDate() - 14)
+  date_end.setDate(date_end.getDate() - 1)
+  let [from] = date_start.toISOString().split('T')
+  let [to] = date_end.toISOString().split('T')
+
+  // Get all our data from Harvest in parallel
+  const [
+    expense_category_id,
+    existing_expenses,
+    days_worked,
+  ] = await Promise.all([
+    get_expense_category_id(),
+    get_existing_expenses(from, to),
+    get_days_worked(from, to)
+  ])
+
+  const existing_expense_keys = existing_expenses
+    .filter(e => e.expense_category.id === expense_category_id)
+    .reduce((acc, { spent_date, project: { id: project_id } }) => (
+      [...acc, JSON.stringify({ project_id, spent_date })]
+    ), [])
+
+  // Filter away any expenses that already exist in Harvest
+  const expenses = days_worked.filter(key => !existing_expense_keys.includes(key))
+  let count = 0;
+
+  await Promise.all(expenses.map(async (key) => {
+    // Create a new expense for each remaining entry
     const { project_id, spent_date } = JSON.parse(key)
     const { id } = await request('expenses', 'POST', {
       project_id,
       expense_category_id,
       spent_date
     })
+    count++
     console.log(`Expense ${id} created for project ${project_id} on ${spent_date}`)
-  }
+  }))
+
+  return count
 }
 
-run().then(() => console.log('Done'))
+run().then((count) => console.log(`Done. ${count} expenses created.`))
