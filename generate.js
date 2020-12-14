@@ -19,7 +19,7 @@ const request = async (path, method = 'GET', data = {}) => {
 const get_expense_category_id = async () => {
   // Get id for whatever expense_category is_active with name "Day Rate"
   const { expense_categories } = await request('expense_categories?is_active=true')
-  return expense_categories.find(c => c.name === 'Day Rate').id
+  return expense_categories.find(c => c.name === process.env.HARVEST_EXPENSE_NAME).id
 }
 
 const get_days_worked = async (from, to) => {
@@ -38,13 +38,23 @@ const get_days_worked = async (from, to) => {
   }, {})
 
   // Exclude any projects where the total number of hours is less than what we consider to be a day's work
-  return Object.entries(totals).filter(([_, hours]) => hours > process.env.MIN_HOURS).map(([key]) => key)
+  const days_with_enough_hours = Object.entries(totals).filter(([_, hours]) => hours > process.env.MIN_HOURS_PER_DAY)
+
+  // Return just our unique keys for each day worked
+  return days_with_enough_hours.map(([key]) => key)
 }
 
 const get_existing_expenses = async (from, to) => {
   // Find any existing expenses for this date range
   const { expenses } = await request(`expenses?from=${from}&to=${to}`)
-  return expenses
+
+  // Filter out any existing expenses that aren't for day rates
+  const relevant_expenses = expenses.filter(e => e.expense_category.name === process.env.HARVEST_EXPENSE_NAME)
+
+  // Return the unique keys for these expenses
+  return relevant_expenses.reduce((acc, { spent_date, project: { id: project_id } }) => (
+    [...acc, JSON.stringify({ project_id, spent_date })]
+  ), [])
 }
 
 const run = async () => {
@@ -67,17 +77,11 @@ const run = async () => {
     get_days_worked(from, to)
   ])
 
-  const existing_expense_keys = existing_expenses
-    .filter(e => e.expense_category.id === expense_category_id)
-    .reduce((acc, { spent_date, project: { id: project_id } }) => (
-      [...acc, JSON.stringify({ project_id, spent_date })]
-    ), [])
-
   // Filter away any expenses that already exist in Harvest
-  const expenses = days_worked.filter(key => !existing_expense_keys.includes(key))
-  let count = 0;
+  const new_expenses = days_worked.filter(key => !existing_expenses.includes(key))
+  let count = 0
 
-  await Promise.all(expenses.map(async (key) => {
+  await Promise.all(new_expenses.map(async (key) => {
     // Create a new expense for each remaining entry
     const { project_id, spent_date } = JSON.parse(key)
     const { id } = await request('expenses', 'POST', {
