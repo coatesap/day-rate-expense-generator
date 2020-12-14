@@ -12,3 +12,10 @@ up per project, and creates expenses for any of those that exceed your `MIN_HOUR
 1. Create a Personal Access Token over at https://id.getharvest.com/developers and add the details to your `.env` file
 1. `yarn install`   
 1. Call this script from a scheduled task (cron) daily: `node generate.js`
+
+## Todo
+
+The following features would be desirable:
+1. Error logging/reporting 
+1. Checking that an identical expense doesn't already exist (to allow the script to 
+   be re-run if necessary)
