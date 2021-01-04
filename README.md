@@ -1,10 +1,10 @@
 # Harvest Day Rate Expense Generator
 
-Getting annoying with Harvest's [rubbish work-around](https://support.getharvest.com/hc/en-us/articles/360048181872-How-do-I-track-day-rates-in-Harvest-) for billing day rates? 
+Getting annoying with Harvest's [rubbish work-around](https://support.getharvest.com/hc/en-us/articles/360048181872-How-do-I-track-day-rates-in-Harvest-) for invoicing day rates? 
 This script allows you to track your hours against a project as normal, but generate 
 the daily expenses, as suggested by Harvest, automatically.
 
-It looks back over the last calendar month's time entries, finds those that are non-billable, sums them 
+It looks at your previous month's time entries, finds those that are non-billable, sums them 
 up per project per day, and creates expenses for any of those that exceed your `MIN_HOURS_PER_DAY` setting.
 
 ## Setup
