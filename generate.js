@@ -58,11 +58,12 @@ const get_existing_expenses = async (from, to) => {
 }
 
 const run = async () => {
-  // Look back over the last couple of weeks
+  // Look back over the last calendar month
   const date_start = new Date()
   const date_end = new Date()
-  date_start.setDate(date_start.getDate() - 14)
-  date_end.setDate(date_end.getDate() - 1)
+  date_start.setDate(1)
+  date_start.setMonth(date_start.getMonth() - 1) // This is safe, as -1 = December
+  date_end.setDate(-1)
   let [from] = date_start.toISOString().split('T')
   let [to] = date_end.toISOString().split('T')
 
