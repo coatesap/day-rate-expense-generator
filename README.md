@@ -13,10 +13,4 @@ up per project per day, and creates expenses for any of those that exceed your `
 1. Set `HARVEST_EXPENSE_NAME` in `.env` to the Expense Category's name
 1. Create a Personal Access Token over at https://id.getharvest.com/developers and add the details to your `.env` file
 1. `yarn install`   
-1. Call this script before doing your invoicing: `node generate.js`
-
-## Todo
-
-The following features would be desirable:
-- [ ] Error logging/reporting 
-- [x] Check that an identical expense doesn't already exist (to allow the script to be re-run if necessary)
+1. Run this script before doing your invoicing: `node generate.js`
