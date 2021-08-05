@@ -1,9 +1,9 @@
 require('dotenv').config()
 const p = require('phin')
 
-const request = async (path, method = 'GET', data = {}) => {
+const request = async (path, method = 'GET', data = null) => {
   const { body } = await p({
-    data,
+    ...(data && data), // only include body data if supplied
     headers: {
       'Harvest-Account-Id': process.env.HARVEST_ACCOUNT_ID,
       'Authorization': 'Bearer ' + process.env.HARVEST_TOKEN,
