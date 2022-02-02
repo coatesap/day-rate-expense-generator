@@ -9,8 +9,9 @@ up per project per day, and creates expenses for any of those that exceed your `
 
 ## Setup
 1. Copy `.env.example` to `.env`
-1. Add an Expense Category for your day rate in Harvest
-1. Set `HARVEST_EXPENSE_NAME` in `.env` to the Expense Category's name
-1. Create a Personal Access Token over at https://id.getharvest.com/developers and add the details to your `.env` file
-1. `yarn install`   
-1. Run this script before doing your invoicing: `node generate.js`
+2. Add an Expense Category for your day rate in Harvest
+3. Set `HARVEST_EXPENSE_NAME` in `.env` to the Expense Category's name
+4. Make sure that the projects you wish to generate billing for have their "Project Type" set to _"Time & Materials"_
+5. Create a Personal Access Token over at https://id.getharvest.com/developers and add the details to your `.env` file
+6. `yarn install`   
+7. Run this script before doing your invoicing: `node generate.js`
