@@ -1,28 +1,30 @@
 {
+  "name": "harvest-day-rate-expense-generator",
+  "description": "Getting annoying with Harvest's [rubbish work-around](https://support.getharvest.com/hc/en-us/articles/360048181872-How-do-I-track-day-rates-in-Harvest-) for billing day rates?  This script allows you to track your hours against a project as normal, but generate  the daily expenses, as suggested by Harvest, automatically.",
+  "homepage": "https://github.com/coatesap/day-rate-expense-generator#readme",
+  "author": "Andy Coates",
+  "version": "1.0.6",
+  "main": "generate.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
   "dependencies": {
     "dotenv": "^8.2.0",
     "phin": "^3.5.1"
   },
-  "name": "harvest-day-rate-expense-generator",
-  "description": "Getting annoying with Harvest's [rubbish work-around](https://support.getharvest.com/hc/en-us/articles/360048181872-How-do-I-track-day-rates-in-Harvest-) for billing day rates?  This script allows you to track your hours against a project as normal, but generate  the daily expenses, as suggested by Harvest, automatically.",
-  "version": "1.0.1",
-  "main": "generate.js",
   "devDependencies": {},
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/coatesap/day-rate-expense-generator.git"
   },
   "keywords": [
     "harvest",
-    "harvestapp"
+    "harvestapp",
+    "contractor",
+    "invoicing"
   ],
-  "author": "Andy Coates",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/coatesap/day-rate-expense-generator/issues"
-  },
-  "homepage": "https://github.com/coatesap/day-rate-expense-generator#readme"
+  }
 }
