@@ -5,7 +5,7 @@
   },
   "name": "harvest-day-rate-expense-generator",
   "description": "Getting annoying with Harvest's [rubbish work-around](https://support.getharvest.com/hc/en-us/articles/360048181872-How-do-I-track-day-rates-in-Harvest-) for billing day rates?  This script allows you to track your hours against a project as normal, but generate  the daily expenses, as suggested by Harvest, automatically.",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "generate.js",
   "devDependencies": {},
   "scripts": {
