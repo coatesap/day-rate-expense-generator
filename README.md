@@ -16,3 +16,9 @@ up per project per day, and creates expenses for any of those that exceed your `
 6. Create a Personal Access Token over at https://id.getharvest.com/developers and add the details to your `.env` file
 7. `yarn install`   
 8. Run this script before doing your invoicing: `node generate.js`
+
+## Usage
+
+Run `node generate.js` to generate expenses for the previous month. 
+You can optionally supply an ISO month (YYYY-MM) as an argument, e.g. `node generate.js 2025-01` to generate expenses for January 2025.
+
