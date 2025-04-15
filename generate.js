@@ -58,17 +58,26 @@ const get_existing_expenses = async (from, to) => {
 }
 
 const run = async () => {
-    // Look back over the last calendar month
-    const date_start = new Date()
-    date_start.setDate(1)
-    date_start.setMonth(date_start.getMonth() - 1) // This is safe, as -1 = December
 
-    const date_end = new Date()
-    date_end.setMonth(date_start.getMonth() + 1) // This should be safe, as 12 = January
-    date_end.setDate(0)
+    // The default start date is the first day of the previous month
+    const start_at = new Date()
+    start_at.setDate(1)
+    start_at.setMonth(start_at.getMonth() - 1) // This is safe, as -1 = December
 
-    let [from] = date_start.toISOString().split('T')
-    let [to] = date_end.toISOString().split('T')
+    // If the user supplies an ISO month (YYYY-MM) argument, use that instead
+    if (process.argv.length > 2) {
+        const [year, month] = process.argv[2].split('-')
+        start_at.setFullYear(year)
+        start_at.setMonth(month - 1)
+    }
+
+    // Set the end date to be the last day of the same month
+    const end_at = new Date(start_at)
+    end_at.setMonth(start_at.getMonth() + 1) // This should be safe, as 12 = January
+    end_at.setDate(0)
+
+    let [start_date] = start_at.toISOString().split('T')
+    let [end_date] = end_at.toISOString().split('T')
 
     // Get all our data from Harvest in parallel
     const [
@@ -77,8 +86,8 @@ const run = async () => {
         days_worked,
     ] = await Promise.all([
         get_expense_category_id(),
-        get_existing_expenses(from, to),
-        get_days_worked(from, to)
+        get_existing_expenses(start_date, end_date),
+        get_days_worked(start_date, end_date)
     ])
 
     // Filter away any expenses that already exist in Harvest
