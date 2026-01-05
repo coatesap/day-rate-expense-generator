@@ -1,12 +1,18 @@
 require('dotenv').config()
 const p = require('phin')
 
+const {
+    HARVEST_ACCOUNT_ID: accountId,
+    HARVEST_EXPENSE_NAME: expenseName,
+    HARVEST_TOKEN: token,
+} = process.env
+
 const request = async (path, method = 'GET', data = null) => {
     const {body} = await p({
         ...(data && {data}), // only include body data if supplied
         headers: {
-            'Harvest-Account-Id': process.env.HARVEST_ACCOUNT_ID,
-            'Authorization': 'Bearer ' + process.env.HARVEST_TOKEN,
+            'Harvest-Account-Id': accountId,
+            'Authorization': 'Bearer ' + token,
             'User-Agent': 'Day Rate Expense Generator',
         },
         method,
@@ -19,7 +25,13 @@ const request = async (path, method = 'GET', data = null) => {
 const get_expense_category_id = async () => {
     // Get id for whatever expense_category is_active with name "Day Rate"
     const {expense_categories} = await request('expense_categories?is_active=true')
-    return expense_categories.find(c => c.name === process.env.HARVEST_EXPENSE_NAME).id
+
+    const category = expense_categories.find(c => c.name === expenseName)
+    if (!category) {
+        throw new Error(`Expense category "${expenseName}" not found`)
+    }
+
+    return category.id
 }
 
 const get_days_worked = async (from, to) => {
@@ -98,10 +110,10 @@ const run = async () => {
     await Promise.all(new_expenses.map(async (key) => {
         // Create a new expense for each remaining entry
         const {project_id, spent_date} = JSON.parse(key)
-        const { id } = await request('expenses', 'POST', {
-          project_id,
-          expense_category_id,
-          spent_date
+        const {id} = await request('expenses', 'POST', {
+            project_id,
+            expense_category_id,
+            spent_date
         })
         count++
         expensesCreated.push({id, project_id, spent_date})
