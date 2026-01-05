@@ -22,3 +22,8 @@ up per project per day, and creates expenses for any of those that exceed your `
 Run `node generate.js` to generate expenses for the previous month. 
 You can optionally supply an ISO month (YYYY-MM) as an argument, e.g. `node generate.js 2025-01` to generate expenses for January 2025.
 
+
+## Releasing new versions to npmjs.com
+1. Use git to add a new tag (e.g. `git tag v1.2.1`)
+2. Push with tags (`git push --tags`)
+3. A GitHub action (see `/.github/workflows/npm-publish.yml`) will automatically run.
